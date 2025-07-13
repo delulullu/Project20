@@ -1,0 +1,36 @@
+<!DOCTYPE html><html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Interactive Hungry Bear</title>
+<style>
+  * { box-sizing: border-box; user-select: none; }
+  body { margin: 0; background-color: #48c1bb; display: flex; align-items: center; justify-content: center; height: 100vh; }
+  .bear { width: 100px; height: 100px; background: url('https://i.imgur.com/jqgJLQC.gif') center/contain no-repeat; transition: transform 0.5s, opacity 0.5s; }.bear.explode { animation: popexplode 0.5s forwards; } @keyframes popexplode { 0% { transform: scale(1); opacity: 1; } 50% { transform: scale(2); opacity: 0.7; } 100% { transform: scale(0); opacity: 0; } }
+
+.bear.small-respawn { transform: scale(0.2); animation: growback 1s forwards; } @keyframes growback { 0% { transform: scale(0.2); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+
+.donut { width: 50px; height: 50px; background: url('https://i.imgur.com/hkpMrNI.png') center/contain no-repeat; cursor: grab; position: absolute; top: 80%; left: 50%; transform: translateX(-50%); } </style>
+
+</head>
+<body>
+<div class="bear" id="bear"></div>
+<div class="donut" id="donut" draggable="true"></div>
+<script>
+let feedCount = 0;
+const maxFeed = 10;
+const bear = document.getElementById('bear');
+const donut = document.getElementById('donut');// Drag functionality let isDragging = false; donut.addEventListener('mousedown', e => { isDragging = true; donut.style.cursor = 'grabbing'; }); document.addEventListener('mouseup', e => { isDragging = false; donut.style.cursor = 'grab'; }); document.addEventListener('mousemove', e => { if (isDragging) { donut.style.left = e.clientX - 25 + 'px'; donut.style.top = e.clientY - 25 + 'px'; checkCollision(); } });
+
+function checkCollision() { const donutRect = donut.getBoundingClientRect(); const bearRect = bear.getBoundingClientRect(); if (!(donutRect.right < bearRect.left || donutRect.left > bearRect.right || donutRect.bottom < bearRect.top || donutRect.top > bearRect.bottom)) { onDonutFed(); resetDonut(); } }
+
+function resetDonut() { donut.style.top = '80%'; donut.style.left = '50%'; }
+
+function onDonutFed() { feedCount++; if (feedCount >= maxFeed) { explodeBear(); } else { bearEatAnimation(); } }
+
+function bearEatAnimation() { bear.style.transform = 'scale(1.1)'; setTimeout(() => { bear.style.transform = 'scale(1)'; }, 200); }
+
+function explodeBear() { bear.classList.add('explode'); setTimeout(() => { bear.classList.remove('explode'); bear.classList.add('small-respawn'); setTimeout(() => { bear.classList.remove('small-respawn'); feedCount = 0; }, 1000); }, 500); } </script>
+
+</body>
+</html>
